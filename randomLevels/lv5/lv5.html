@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html> 
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Random Pattern</title>
+    <link rel="stylesheet" href="../template.css">
+</head>
+
+<body>
+    
+    <canvas id="mycanvas"></canvas> <!-- draws canvas on page (khan environment) -->
+</body>
+
+<script src="https://cdn.jsdelivr.net/processing.js/1.4.8/processing.min.js"></script> <!-- processing.js library -->
+
+<script>
+    var sketchProc = function (processingInstance) {
+        with(processingInstance) {
+            size(1000, 1000);
+            frameRate(100);
+            background(255, 255, 255);
+            var Walker = function () {
+                this.speed = 0;
+                this.speedY = 0;
+                this.stretch = 0;
+                this.xMin = 0;
+                this.xMax = width;
+                this.yMin = 0;
+                this.yMax = height;
+                this.x = width / 2;
+                this.y = height / 2;
+                this.r = 255;
+                this.g = 255;
+                this.b = 255;
+                this.r1 = random(0, 255);
+                this.r2 = random(0, 255);
+                this.g1 = random(0, 255);
+                this.g2 = random(0, 255);
+                this.b1 = random(0, 255);
+                this.b2 = random(0, 255);
+                this.t = 100;
+                this.t1 = 100
+                this.t2 = 100
+            };
+
+            Walker.prototype.display = function (shape, strokeQ, rectM) {
+                if (strokeQ === 0) {
+                    noStroke();
+                } else {
+                    strokeWeight(1);
+                }
+                if (rectM === 1) {
+                    rectMode(CENTER);
+                }
+
+                fill(this.r, this.g, this.b, this.t);
+                shape(this.x, this.y, this.stretch, this.stretch);
+                shape(this.y, this.x, this.stretch, this.stretch);
+                shape(this.xMax - this.x, this.yMax - this.y, this.stretch, this.stretch);
+                shape(this.xMax - this.y, this.yMax - this.x, this.stretch, this.stretch);
+                shape(this.xMax - this.x, this.y, this.stretch, this.stretch);
+                shape(this.xMax - this.y, this.x, this.stretch, this.stretch);
+                shape(this.x, this.yMax - this.y, this.stretch, this.stretch);
+                shape(this.y, this.yMax - this.x, this.stretch, this.stretch);
+            };
+
+            Walker.prototype.display2 = function (shape, strokeQ, rectM) {
+                if (strokeQ === 0) {
+                    noStroke();
+                } else {
+                    strokeWeight(1);
+                }
+                if (rectM === 1) {
+                    rectMode(CENTER);
+                }
+
+                fill(this.r, this.g, this.b, this.t);
+                let scales = [];
+                let scaleQ = floor(random(0, 3));
+                let scalar;
+                if (scaleQ === 0) {
+                    scalar = 2;
+                } else if (scaleQ === 1) {
+                    scalar = random(1, 10);
+                } else if (scaleQ === 2) {
+                    scalar = random(0, 100);
+                }
+
+                for (var i = 0; i < scalar; i++) {
+                    scales.push(random(0, 2));
+                    shape(this.x * scales[i], this.y * scales[i], this.stretch, this.stretch);
+                    shape(this.y * scales[i], this.x * scales[i], this.stretch, this.stretch);
+                    shape(width - this.x * scales[i], this.y * scales[i], this.stretch, this.stretch);
+                    shape(width - this.y * scales[i], this.x * scales[i], this.stretch, this.stretch);
+                    shape(this.x * scales[i], height - this.y * scales[i], this.stretch, this.stretch);
+                    shape(this.y * scales[i], height - this.x * scales[i], this.stretch, this.stretch);
+                    shape(width - this.x * scales[i], height - this.y * scales[i], this.stretch, this
+                        .stretch);
+                    shape(width - this.y * scales[i], height - this.x * scales[i], this.stretch, this
+                        .stretch);
+                }
+            };
+
+            Walker.prototype.walk = function (inc = 1, stMin = 0, stMax = 30, spXMin = 2, spXMax = 5, spYMin =
+                2, spYMax = 5) {
+                var choice = floor(random(10));
+                var choice2 = floor(random(10));
+                var scald = random(0, 10);
+                switch (choice) {
+                    case 0:
+                        this.x += this.speed;
+                        break;
+                    case 1:
+                        this.x -= this.speed;
+                        break;
+                    case 2:
+                        this.y += this.speedY;
+                        break;
+                    case 3:
+                        this.y -= this.speedY;
+                        break;
+                    case 4:
+                        this.x += this.speed;
+                        this.y += this.speedY;
+                        break;
+                    case 5:
+                        this.x -= this.speed;
+                        this.y -= this.speedY;
+                        break;
+                    case 6:
+                        this.x += this.speed * scald;
+                        this.y -= this.speedY * scald;
+                        break;
+                    case 7:
+                        this.x -= this.speed * scald;
+                        this.y += this.speedY * scald;
+                        break;
+                    case 8:
+                        this.x += this.speed * scald;
+                        this.y += this.speedY * scald;
+                        break;
+                    case 9:
+                        this.x -= this.speed * scald;
+                        this.y -= this.speedY * scald;
+                }
+                switch (choice2) {
+                    case 0:
+                        this.r = random(this.r1, this.r2);
+                        this.g = random(this.g1, this.g2);
+                        this.b = random(this.b1, this.b2);
+                        break;
+                    case 1:
+                        this.stretch += inc;
+                        break;
+                    case 2:
+                        this.stretch -= inc;
+                        break;
+                    case 3:
+                        this.stretch += inc;
+                        break;
+                    case 4:
+                        this.stretch -= inc;
+                        break;
+                    case 5:
+                        this.speed += inc;
+                        break;
+                    case 6:
+                        this.speed -= inc;
+                        break;
+                    case 7:
+                        this.t += inc;
+                        break;
+                    case 8:
+                        this.t -= inc;
+                        break;
+                }
+
+                if (this.stretch < stMin) {
+                    this.stretch += inc;
+                } else if (this.stretch > stMax) {
+                    this.stretch -= inc;
+                }
+
+                if (this.speed < spXMin) {
+                    this.speed += inc;
+                } else if (this.speed > spXMax) {
+                    this.speed -= inc;
+                }
+
+                if (this.speedY < spYMin) {
+                    this.speedY += inc;
+                } else if (this.speedY > spYMax) {
+                    this.speed -= inc;
+                }
+
+                if (this.t > 50) {
+                    this.t -= inc;
+                } else if (this.t < 50) {
+                    this.t += inc;
+                }
+
+                //confines range in terms of zero, width, and height
+                if (this.x < this.xMin) { // minimum x
+                    this.x++;
+                } else if (this.x > this.xMax) { //maximum x
+                    this.x--;
+                }
+
+                if (this.y < this.yMin) { //minimum y
+                    this.y++;
+                } else if (this.y > this.yMax) { //maximum y
+                    this.y--;
+                }
+
+            };
+            Walker.prototype.display0 = function (shape, strokeQ, rectM) {
+                if (strokeQ === 0) {
+                    noStroke();
+                } else {
+                    strokeWeight(1);
+                }
+                if (rectM === 1) {
+                    rectMode(CENTER);
+                }
+
+                fill(this.r, this.g, this.b, this.t);
+                shape(this.x, this.y, this.stretch, this.stretch);
+            };
+
+            
+
+            // var setValues = function () {
+            //         var values = [w.x, w.y, w.stretch, w.speed, w.speedY, w.r1, w.rg1, w.b1, w.t1, w.r2, w.g2, w.b2, w.t2, w.r, w.g, w.t];
+            //         var bullets = document.getElementByClassName("stats");
+            //         for (var i=0; i<bullets.length; i++) {
+            //             bullets[i].innerHTML += values[i];
+            //         }
+            //     };
+            // setValues();
+
+            var w = new Walker();
+            var n = 10;
+
+            draw = function () {
+                for (var q = 0; q < n; q++) {
+                    w.walk(1, 0, 50, 1, 15, 1, 15);
+                    //w.display2(ellipse, 0, 0);
+                    w.display(ellipse, 0, 0);
+                }
+            };
+        }
+    };
+
+    var layers = function (n) {
+        var canvas = [];
+        for (var i = 0; i < n; i++) {
+            canvas.push(document.getElementById("mycanvas"));
+            var processingInstance = new Processing(canvas[i], sketchProc);
+        }
+    };
+
+    layers(1);
+</script>
+
+</html>

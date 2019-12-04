@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Random Pattern</title>
+    <link rel="stylesheet" href="../template.css">
+</head>
+
+<body>
+    <header>
+        <canvas id="mycanvas"></canvas>
+    </header>
+
+</body>
+
+<script src="https://cdn.jsdelivr.net/processing.js/1.4.8/processing.min.js"></script> <!-- processing.js library -->
+
+<script>
+    var sketchProc = function (processingInstance) {
+        with(processingInstance) {
+            size(1000, 1000);
+            frameRate(100);
+            background(255, 255, 255);
+            var Walker = function () {
+                this.speed = 1;
+                this.speedY = 1;
+                this.stretch = 1;
+                this.xMin = 0;
+                this.xMax = width;
+                this.yMin = 0;
+                this.yMax = height;
+                this.x = width / 2;
+                this.y = height / 2;
+                this.r = 255;
+                this.g = 255;
+                this.b = 255;
+                this.r1 = random(0, 255);
+                this.r2 = random(0, 255);
+                this.g1 = random(0, 255);
+                this.g2 = random(0, 255);
+                this.b1 = random(0, 255);
+                this.b2 = random(0, 255);
+                this.t = 100;
+                this.t1 = 100
+                this.t2 = 100
+            };
+
+            var randomInt = function (min = 0, max) {
+                return Math.floor(Math.random() * max - min);
+            };
+
+            var rectEllipse = function (x, y, st) {
+                ellipse(x, y, st, st);
+                rect(x, y, st, st);
+            };
+
+            var isocTri = function (x, y, st) {
+                triangle(x, y, x + st, y, x, y + st * 2);
+                triangle(x, y, x, y + st * 2, x - st, y);
+            };
+
+            var randTri = function (x, y, st, x1, x2, y1, y2, master) {
+                var triX = [
+                    [],
+                    [],
+                    []
+                ];
+                var triY = [
+                    [],
+                    [],
+                    []
+                ];
+                var stX = st * random(x1, x2);
+                var stY = st * random(y1, y2);
+
+                for (var u = 0; u < master; u++) {
+                    for (var i = 0; i < triX.length; i++) {
+                        var fork = floor(random(0, 2));
+                        if (fork === 0) {
+                            triX[i].push(x);
+                        } else if (fork === 1) {
+                            triX[i].push(x + stX);
+                        } else {
+                            triX[i].push(x - stX);
+                        }
+                    }
+
+                    for (var w = 0; w < triY.length; w++) {
+                        var fork = floor(random(0, 2));
+                        if (fork === 0) {
+                            triY[w].push(y);
+                        } else if (fork === 1) {
+                            triY[w].push(y + stY);
+                        } else {
+                            triY[w].push(y - stY);
+                        }
+                    }
+                }
+
+                for (var q = 0; q < triX[0].length; q++) {
+                    triangle(triX[0][q], triY[0][q], triX[1][q], triY[1][q], triX[2][q], triY[2][q]);
+                }
+
+            };
+
+            var randomEllipse = function (shape, x, y, st, x1, x2, y1, y2, w1, w2, h1, h2, MASTER) {
+                var xS = [];
+                var yS = [];
+                var wid = [];
+                var hei = [];
+                var stX = st * random(x1, x2);
+                var stY = st * random(y1, y2);
+                var stWid = st * random(w1, w2);
+                var stHei = st * random(h1, h2);
+
+                for (var i = 0; i < MASTER; i++) {
+                    var xFork = floor(random(0, 2));
+                    if (xFork === 0) {
+                        xS.push(x);
+                    } else if (xFork === 1) {
+                        xS.push(x + stX)
+                    } else {
+                        xS.push(x - stX);
+                    }
+
+                    var yFork = floor(random(0, 2));
+                    if (yFork === 0) {
+                        yS.push(y);
+                    } else if (yFork === 1) {
+                        yS.push(y + stY)
+                    } else {
+                        yS.push(y - stY);
+                    }
+
+                    var widFork = floor(random(0, 2));
+                    if (widFork === 0) {
+                        wid.push(st);
+                    } else if (widFork === 1) {
+                        wid.push(st + stWid)
+                    } else {
+                        wid.push(st - stWid);
+                    }
+
+                    var heiFork = floor(random(0, 2));
+                    if (heiFork === 0) {
+                        hei.push(st);
+                    } else if (heiFork === 1) {
+                        hei.push(st + stHei)
+                    } else {
+                        hei.push(st - stHei);
+                    }
+
+                }
+                for (var u = 0; u < xS.length; u++) {
+                    rectMode(CENTER);
+                    shape(xS[u], yS[u], wid[u], hei[u]);
+                }
+            };
+
+            var complex = function (x, y, st, tri, eli, rec) {
+                var scale = random(0, 10);
+                if (tri === 1) {
+                    randTri(x, y, st, -scale, scale, -scale, scale, 3);
+                }
+                if (eli === 1) {
+                    randomEllipse(ellipse, x, y, st, -scale, scale, -scale, scale, -scale, scale, -scale,
+                        scale, 3);
+                }
+                if (rec === 1) {
+                    randomEllipse(rect, x, y, st, -scale, scale, -scale, scale, -scale, scale, -scale,
+                        scale, 3);
+                }
+            };
+
+            var cTri = function (x, y, st) {
+                complex(x, y, st, 1, 0, 0);
+            };
+
+            var cEli = function (x, y, st) {
+                complex(x, y, st, 0, 1, 0);
+            };
+
+            var cRec = function (x, y, st) {
+                complex(x, y, st, 0, 0, 1);
+            };
+
+            var cTriEli = function (x, y, st) {
+                complex(x, y, st, 1, 0, 0);
+                complex(x, y, st, 0, 1, 0);
+            };
+
+            var cTriRec = function (x, y, st) {
+                complex(x, y, st, 1, 0, 0);
+                complex(x, y, st, 0, 0, 1);
+            };
+
+            var cEliRec = function (x, y, st) {
+                complex(x, y, st, 1, 0, 0);
+                complex(x, y, st, 0, 1, 0);
+            };
+
+            var cTriEliRec = function (x, y, st) {
+                complex(x, y, st, 1, 0, 0);
+                complex(x, y, st, 0, 1, 0);
+                complex(x, y, st, 0, 0, 1);
+            };
+
+            var simpleTri = function (x, y, st) {
+                randTri(x, y, st, -1, 1, -1, 1);
+            };
+            
+            var trans0 = randomInt(0,2);
+            var strokeQ0 = randomInt(0, 2);
+            var rectM0 = randomInt(0, 2);
+
+            Walker.prototype.display0 = function (shape) {
+                if (trans0 === 0) {
+                    fill(this.r, this.g, this.b);
+                } else {
+                    fill(this.r, this.g, this.b, this.t);
+                }
+
+                if (strokeQ0 === 0) {
+                    noStroke();
+                } else {
+                    strokeWeight(1);
+                }
+
+                if (rectM0 === 0) {
+                    rectMode(CENTER);
+                }
+
+                fill(this.r, this.g, this.b, this.t);
+                shape(this.x, this.y, this.stretch, this.stretch);
+            };
+
+            var trans1 = randomInt(0,2);
+            var strokeQ1 = randomInt(0, 2);
+            var rectM1 = randomInt(0, 2);
+            Walker.prototype.display = function (shape) {
+                if (trans1 === 0) {
+                    fill(this.r, this.g, this.b);
+                } else {
+                    fill(this.r, this.g, this.b, this.t);
+                }
+
+                if (strokeQ1 === 0) {
+                    noStroke();
+                } else {
+                    strokeWeight(1);
+                }
+
+                if (rectM1 === 0) {
+                    rectMode(CENTER);
+                }
+
+                shape(this.x, this.y, this.stretch, this.stretch);
+                shape(this.y, this.x, this.stretch, this.stretch);
+                shape(this.xMax - this.x, this.yMax - this.y, this.stretch, this.stretch);
+                shape(this.xMax - this.y, this.yMax - this.x, this.stretch, this.stretch);
+                shape(this.xMax - this.x, this.y, this.stretch, this.stretch);
+                shape(this.xMax - this.y, this.x, this.stretch, this.stretch);
+                shape(this.x, this.yMax - this.y, this.stretch, this.stretch);
+                shape(this.y, this.yMax - this.x, this.stretch, this.stretch);
+            };
+
+            var trans2 = randomInt(0,2);
+            var strokeQ2 = randomInt(0, 2);
+            var rectM2 = randomInt(0, 2);
+            Walker.prototype.display2 = function (shape) {
+                if (trans2 === 0) {
+                    fill(this.r, this.g, this.b);
+                } else {
+                    fill(this.r, this.g, this.b, this.t);
+                }
+
+                if (strokeQ2 === 0) {
+                    noStroke();
+                } else {
+                    strokeWeight(1);
+                }
+
+                if (rectM2 === 0) {
+                    rectMode(CENTER);
+                }
+
+                fill(this.r, this.g, this.b, this.t);
+                let scales = [];
+                let scaleQ = floor(random(0, 3));
+                let scalar;
+                if (scaleQ === 0) {
+                    scalar = 2;
+                } else if (scaleQ === 1) {
+                    scalar = random(1, 10);
+                } else if (scaleQ === 2) {
+                    scalar = random(0, 100);
+                }
+
+                for (var i = 0; i < scalar; i++) {
+                    scales.push(random(0, 2));
+                    shape(this.x * scales[i], this.y * scales[i], this.stretch, this.stretch);
+                    shape(this.y * scales[i], this.x * scales[i], this.stretch, this.stretch);
+                    shape(width - this.x * scales[i], this.y * scales[i], this.stretch, this.stretch);
+                    shape(width - this.y * scales[i], this.x * scales[i], this.stretch, this.stretch);
+                    shape(this.x * scales[i], height - this.y * scales[i], this.stretch, this.stretch);
+                    shape(this.y * scales[i], height - this.x * scales[i], this.stretch, this.stretch);
+                    shape(width - this.x * scales[i], height - this.y * scales[i], this.stretch, this
+                        .stretch);
+                    shape(width - this.y * scales[i], height - this.x * scales[i], this.stretch, this
+                        .stretch);
+                }
+            };
+
+            Walker.prototype.walk = function (inc = 1, stMin = 0, stMax = 30, spXMin = 2, spXMax = 5, spYMin =
+                2, spYMax = 5) {
+                var choice = floor(random(10));
+                var choice2 = floor(random(10));
+                var scald = random(0, 10);
+                switch (choice) {
+                    case 0:
+                        this.x += this.speed;
+                        break;
+                    case 1:
+                        this.x -= this.speed;
+                        break;
+                    case 2:
+                        this.y += this.speedY;
+                        break;
+                    case 3:
+                        this.y -= this.speedY;
+                        break;
+                    case 4:
+                        this.x += this.speed;
+                        this.y += this.speedY;
+                        break;
+                    case 5:
+                        this.x -= this.speed;
+                        this.y -= this.speedY;
+                        break;
+                    case 6:
+                        this.x += this.speed * scald;
+                        this.y -= this.speedY * scald;
+                        break;
+                    case 7:
+                        this.x -= this.speed * scald;
+                        this.y += this.speedY * scald;
+                        break;
+                    case 8:
+                        this.x += this.speed * scald;
+                        this.y += this.speedY * scald;
+                        break;
+                    case 9:
+                        this.x -= this.speed * scald;
+                        this.y -= this.speedY * scald;
+                }
+                switch (choice2) {
+                    case 0:
+                        this.r = random(this.r1, this.r2);
+                        this.g = random(this.g1, this.g2);
+                        this.b = random(this.b1, this.b2);
+                        break;
+                    case 1:
+                        this.stretch += inc;
+                        break;
+                    case 2:
+                        this.stretch -= inc;
+                        break;
+                    case 3:
+                        this.stretch += inc;
+                        break;
+                    case 4:
+                        this.stretch -= inc;
+                        break;
+                    case 5:
+                        this.speed += inc;
+                        break;
+                    case 6:
+                        this.speed -= inc;
+                        break;
+                    case 7:
+                        this.t += inc;
+                        break;
+                    case 8:
+                        this.t -= inc;
+                        break;
+                }
+
+                if (this.stretch < stMin) {
+                    this.stretch += inc;
+                } else if (this.stretch > stMax) {
+                    this.stretch -= inc;
+                }
+
+                if (this.speed < spXMin) {
+                    this.speed += inc;
+                } else if (this.speed > spXMax) {
+                    this.speed -= inc;
+                }
+
+                if (this.speedY < spYMin) {
+                    this.speedY += inc;
+                } else if (this.speedY > spYMax) {
+                    this.speed -= inc;
+                }
+
+                if (this.t > 50) {
+                    this.t -= inc;
+                } else if (this.t < 50) {
+                    this.t += inc;
+                }
+
+                //confines range in terms of zero, width, and height
+                if (this.x < this.xMin) { // minimum x
+                    this.x++;
+                } else if (this.x > this.xMax) { //maximum x
+                    this.x--;
+                }
+
+                if (this.y < this.yMin) { //minimum y
+                    this.y++;
+                } else if (this.y > this.yMax) { //maximum y
+                    this.y--;
+                }
+
+            };
+
+            var w = new Walker();
+            var n = random(0, 50);
+            var display = randomInt(0, 3);
+            var shape = randomInt(0, 8);
+
+            draw = function () {
+                for (var q = 0; q < n; q++) {
+                    w.walk(randomInt(0, 3), randomInt(0, 10), randomInt(10, 100), 2, 5, 2, 5);
+                    if (display === 0) {
+                        switch (shape) {
+                            case 0:
+                                w.display0(ellipse);
+                                break;
+                            case 1:
+                                w.display0(rect);
+                                break;
+                            case 2:
+                                w.display0(rectEllipse);
+                                break;
+                            case 3:
+                                w.display0(isocTri);
+                                break;
+                            case 4:
+                                w.display0(cTri);
+                                break;
+                            case 5:
+                                w.display0(cEli);
+                                break;
+                            case 6:
+                                w.display0(cRec);
+                                break;
+                            case 7:
+                                w.display0(cTriEliRec);
+                                break;
+                            case 8:
+                                w.display0(rect);
+                        }
+                    } else if (display === 1) {
+                        switch (shape) {
+                            case 0:
+                                w.display(ellipse);
+                                break;
+                            case 1:
+                                w.display(rect);
+                                break;
+                            case 2:
+                                w.display(rectEllipse);
+                                break;
+                            case 3:
+                                w.display(isocTri);
+                                break;
+                            case 4:
+                                w.display(cTri);
+                                break;
+                            case 5:
+                                w.display(cEli);
+                                break;
+                            case 6:
+                                w.display(cRec);
+                                break;
+                            case 7:
+                                w.display(cTriEliRec);
+                                break;
+                            case 8:
+                                w.display(rect);
+                        }
+                    } else {
+                        switch (shape) {
+                            case 0:
+                                w.display2(ellipse);
+                                break;
+                            case 1:
+                                w.display2(rect);
+                                break;
+                            case 2:
+                                w.display2(rectEllipse);
+                                break;
+                            case 3:
+                                w.display2(isocTri);
+                                break;
+                            case 4:
+                                w.display2(cTri);
+                                break;
+                            case 5:
+                                w.display2(cEli);
+                                break;
+                            case 6:
+                                w.display2(cRec);
+                                break;
+                            case 7:
+                                w.display2(cTriEliRec);
+                                break;
+                            case 8:
+                                w.display2(rect);
+                        }
+                    }/**/
+                }
+            };
+        }
+    };
+
+    var layers = function (n) {
+        var canvas = [];
+        for (var i = 0; i < n; i++) {
+            canvas.push(document.getElementById("mycanvas"));
+            var processingInstance = new Processing(canvas[i], sketchProc);
+        }
+    };
+
+    layers(1);
+</script>
+
+</html>
