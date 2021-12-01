@@ -1,0 +1,22 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#mycanvas {
+    
+    width: 55%;
+    height: auto;
+    margin: 0 22.5%;
+    
+}
+
+#push {
+    width: 20%;
+    height: auto;
+    margin: 5% 40%;
+}
+
+img {
+    border: 1px solid black;
+}
